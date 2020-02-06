@@ -1169,126 +1169,97 @@ private: System::Void aboutToolStripMenuItem_Click(System::Object^ sender, Syste
 //	e->Handled = true;
 //}
 
+
+//////
+//////функция изменения посылки
+//////
+private: System::Void editor(int idx, bool stateSt1, String^ id, String^ sdata, int timeout) {
+	int index;
+	unsigned char data[8], bytearray[8];
+	HANDLE handle = mainhandle;
+	CMSG canMsg[1];
+	long l_retval, b_len = 1;
+
+	if (dataGridView2->Rows[idx]->Cells[0]->Value != "Send")// остановка отправки изменяемой посылки
+	{
+		index = findThread(dataGridView2->Rows[idx]->Cells[1]->Value->ToString());
+		lister[index]->stopTh();
+		lister->RemoveAt(index);
+	}
+
+	for (int i = 0; i < 8; i++) { //обработка данных посылки
+		data[i] = hex_data(sdata[2 * i], sdata[2 * i + 1]);
+	}
+
+	//сбор посылки
+	canMsg[0].l_id = Str_to_int(SF->getid());
+	canMsg[0].by_len = 8;
+	for (int i = 0; i < 8; i++) {
+		bytearray[i] = data[i];
+	}
+	for (int i = 0; i < 8; i++) {
+		canMsg[0].aby_data[i] = bytearray[i];
+	}
+	canMsg[0].by_extended = 1;
+	canMsg[0].by_remote = 0;
+
+
+	//непрерывная отправка
+	if (stateSt1) {
+		pingOfSend^ temp = gcnew pingOfSend(handle, to_hex(canMsg[0].l_id), canMsg, timeout);
+		temp->start();
+		if (temp->is_alive()) {
+			lister->Add(temp);
+			dataGridView2->Rows[idx]->Cells[0]->Value = "Pause";
+			dataGridView2->Rows[idx]->Cells[1]->Value = to_hex(canMsg[0].l_id);
+			for (int i = 0; i < 8; i++) {
+				dataGridView2->Rows[idx]->Cells[i + 2]->Value = to_hex(canMsg[0].aby_data[i]);
+			}
+			dataGridView2->Rows[idx]->Cells[10]->Value = timeout;
+			listBox2->Items->Add("Посылка ID:" + to_hex(canMsg[0].l_id) + " изменена");
+			listBox2->TopIndex = listBox2->Items->Count - 1;
+		}
+		else {
+			listBox2->Items->Add("Упс... Что-то пошло не так.");
+			listBox2->TopIndex = listBox2->Items->Count - 1;
+		}
+	}
+	else { //единичная посылка
+		dataGridView2->Rows[idx]->Cells[0]->Value = "Send";
+		dataGridView2->Rows[idx]->Cells[1]->Value = to_hex(canMsg[0].l_id);
+		for (int i = 0; i < 8; i++) {
+			dataGridView2->Rows[idx]->Cells[i + 2]->Value = to_hex(canMsg[0].aby_data[i]);
+		}
+		dataGridView2->Rows[idx]->Cells[10]->Value = "-";
+		listBox2->Items->Add("Посылка ID:" + to_hex(canMsg[0].l_id) + " изменена");
+		listBox2->TopIndex = listBox2->Items->Count - 1;
+		soloSend(idx);
+	}
+
+}
+
 private: System::Void edit_Click(System::Object^ sender, System::EventArgs^ e) {
 	//редактирование посылки
 	if (dataGridView2->Rows->Count != 0) {
-		int index, i12 = dataGridView2->CurrentRow->Index;
+		int i12 = dataGridView2->CurrentRow->Index, reservedIndex = 0;
 		bool stateSt = true;
-		int reservedIndex = 0;
-		pingOfSend^ temp;
-		if (dataGridView2->Rows[i12]->Cells[0]->Value == "Send")
-		{
-			stateSt = false;
-		}
+		if (dataGridView2->Rows[i12]->Cells[0]->Value != "Send") stateSt = false;
 		SF->set(Convert::ToString(dataGridView2->Rows[i12]->Cells[1]->Value), stateSt, Convert::ToString(dataGridView2->Rows[i12]->Cells[10]->Value));
 		SF->setData(dataGridView2->Rows[i12]->Cells[2]->Value->ToString(), dataGridView2->Rows[i12]->Cells[3]->Value->ToString(), dataGridView2->Rows[i12]->Cells[4]->Value->ToString(), dataGridView2->Rows[i12]->Cells[5]->Value->ToString(), dataGridView2->Rows[i12]->Cells[6]->Value->ToString(), dataGridView2->Rows[i12]->Cells[7]->Value->ToString(), dataGridView2->Rows[i12]->Cells[8]->Value->ToString(), dataGridView2->Rows[i12]->Cells[9]->Value->ToString());
 		SF->ShowDialog();
 		if (SF->DialogResult == System::Windows::Forms::DialogResult::OK) {
-			if (stateSt) {
-				index = findThread(dataGridView2->Rows[i12]->Cells[1]->Value->ToString());
-				lister[index]->stopTh();
-				lister->RemoveAt(index);
-				//for (int i = 0; i <= nowMesgS; i++) {
-					//if (sendingFlags[i] == 1) {
-
-				//temp = findThread(dataGridView2->Rows[i12]->Cells[1]->Value->ToString());
-				if (dataGridView2->Rows[i12]->Cells[0]->Value->ToString() == "Resume") temp->resume();
-					//temp->stopTh();
-				reservedIndex = i12;
-					//break;
-					//}
-				//}				 
-			}
-			String^ sdata = SF->getdata();
-			unsigned char data[8];
-			bool stateSt1 = true;;
-			int k = countOfSThreads - 1;
-			for (int i = 0; i < 8; i++) {
-				data[i] = hex_data(sdata[2 * i], sdata[2 * i + 1]);
-			}
-			HANDLE handle = mainhandle;
-			long l_retval, b_len = 1;
-			int timeout = 0;
-			CMSG canMsg[1];
-			unsigned char bytearray[8];
-			//структура для чтения шины
-			void (*myCMSG)();
-			(FARPROC&)myCMSG = GetProcAddress(hLib, "CMSG");
-
-			canMsg[0].l_id = Str_to_int(SF->getid());
-			canMsg[0].by_len = 8;
-			for (int i = 0; i < 8; i++) {
-				bytearray[i] = data[i];
-			}
-			for (int i = 0; i < 8; i++) {
-				canMsg[0].aby_data[i] = bytearray[i];
-			}
-			canMsg[0].by_extended = 1;
-			canMsg[0].by_remote = 0;
-			stateSt1 = SF->getState();
-
-			//отделение потока
-			if (stateSt1) {
-				timeout = SF->gettimeout();
-				temp = gcnew pingOfSend(handle, to_hex(canMsg[0].l_id), canMsg, timeout);
-				lister->Add(temp);
-				if (temp->start()) {
-					sendingFlags[reservedIndex] = 1;
-					if (stateSt == false) {
-						countOfSThreads++;
-					}
-					dataGridView2->Rows[i12]->Cells[0]->Value = "Pause";
-					dataGridView2->Rows[i12]->Cells[1]->Value = to_hex(canMsg[0].l_id);
-					for (int i = 0; i < 8; i++) {
-						dataGridView2->Rows[i12]->Cells[i + 2]->Value = to_hex(canMsg[0].aby_data[i]);
-					}
-					dataGridView2->Rows[i12]->Cells[10]->Value = timeout;
-					listBox2->Items->Add("Посылка ID:" + to_hex(canMsg[0].l_id) + " изменена");
-					listBox2->TopIndex = listBox2->Items->Count - 1;
-				}
-				else {
-					listBox2->Items->Add("Упс... Что-то пошло не так.");
-					listBox2->TopIndex = listBox2->Items->Count - 1;
-				}
-			}
-			else { //единичная посылка
-				dataGridView2->Rows[i12]->Cells[0]->Value = "Send";
-				dataGridView2->Rows[i12]->Cells[1]->Value = to_hex(canMsg[0].l_id);
-				for (int i = 0; i < 8; i++) {
-					dataGridView2->Rows[i12]->Cells[i + 2]->Value = to_hex(canMsg[0].aby_data[i]);
-				}
-				dataGridView2->Rows[i12]->Cells[10]->Value = "-";
-				sendingFlags[i12] = 2;
-				listBox2->Items->Add("Посылка ID:" + to_hex(canMsg[0].l_id) + " изменена");
-				listBox2->TopIndex = listBox2->Items->Count - 1;
-				soloSend(i12);
-			}
-
-			while (k >= 0) {
-				if (sendingFlags[k] != 1) {
-					countOfSThreads--;
-					k--;
-				}
-				else break;
-			}
+			editor(i12, SF->getState(), SF->getid(), SF->getdata(), SF->gettimeout());
 		}
 	}
 }
 
 private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
 	//остановка отправки всех посылок и очистка панели
-	//listBox3->Items->Clear();
-
-	//временный поток для проверки отправки посылок
 	if (dataGridView2->Rows->Count > 0) {
 		for (int i = 0; i < lister->Count; i++) {
 			lister[i]->stopTh();
 		}
 		lister->Clear();
-		//for (int i = 0; i <= nowMesgS; i++) {
-		//	testThread->stopTh();
-		//	sendingFlags[i] = 0;
-		//}
 		dataGridView2->Rows->Clear();
 		nowMesgS = 0;
 		listBox2->Items->Add("Все посылки остановлены.");
@@ -1301,49 +1272,24 @@ private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e
 	//
 }
 
-
-
-	   private: static bool fname(pingOfSend^ temp) {
-		   if (temp->getName()) return true;
-		   else return false;
-	   }
-	//пока заблокирована
-	private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
+//пока заблокирована
+private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
 		//остановка отправки выбранной посылки и удаление ее из панели
-		if (dataGridView2->Rows->Count > 0) {
-			pingOfSend^ temp;
-			int i = dataGridView2->CurrentRow->Index;
-			int k = countOfSThreads - 1;
-			//перебор потоков
-			//temp = findThread(dataGridView2->Rows[i]->Cells[1]->Value->ToString());
-			//temp->stopTh();
-				//sendingFlags[j] = 0;
-			int index = findThread(dataGridView2->Rows[i]->Cells[1]->Value->ToString());
-			lister[index]->stopTh;
-			lister->RemoveAt(index);
+	if (dataGridView2->Rows->Count > 0) {
+		int i = dataGridView2->CurrentRow->Index, k = countOfSThreads - 1, index = findThread(dataGridView2->Rows[i]->Cells[1]->Value->ToString()); //перебор потоков
+		lister[index]->stopTh();
+		lister->RemoveAt(index);
 
-
-			lister->Find(gcnew Predicate<pingOfSend^>(fname));
-			
-
-
-			nowMesgS--;
-			dataGridView2->Rows->RemoveAt(i);
-			while (k >= 0) {
-				if (sendingFlags[k] != 1) {
-					countOfSThreads--;
-					k--;
-				}
-				else break;
-			}
-			listBox2->Items->Add("Выбранная посылка удалена");
-			listBox2->TopIndex = listBox2->Items->Count - 1;
-		}
-		else {
-			listBox2->Items->Add("Посылок нет.");
-			listBox2->TopIndex = listBox2->Items->Count - 1;
-		}
+		nowMesgS--;
+		dataGridView2->Rows->RemoveAt(i);
+		listBox2->Items->Add("Выбранная посылка удалена");
+		listBox2->TopIndex = listBox2->Items->Count - 1;
 	}
+	else {
+		listBox2->Items->Add("Посылок нет.");
+		listBox2->TopIndex = listBox2->Items->Count - 1;
+	}
+}
 
 private: System::Void MyForm_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e) {
 	//закрытие лишних потоков
@@ -1359,8 +1305,6 @@ private: void soloSend(int index) {
 	CMSG canMsg[1];
 	unsigned char bytearray[8];
 
-	void (*myCMSG)();
-	(FARPROC&)myCMSG = GetProcAddress(hLib, "CMSG");
 	typedef long (WINAPI* mycanSend)(void*, CMSG*, long*);
 	mycanSend canSend1;
 	(FARPROC&)canSend1 = GetProcAddress(hLib, "canSend");

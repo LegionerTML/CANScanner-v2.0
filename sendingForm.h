@@ -318,7 +318,10 @@ namespace CANScannerv20 {
 		return ret;
 	}
 	public: System::Int32 gettimeout() {
-		Int32 ret = Convert::ToInt32(textBox10->Text);
+		System::Int32 ret = 0;
+		if (checkBox1->Checked) {
+			Int32 ret = Convert::ToInt32(textBox10->Text);
+		}
 		return ret;
 	}
 	
