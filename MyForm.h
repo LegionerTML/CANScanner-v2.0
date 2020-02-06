@@ -654,7 +654,7 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			this->button1->TabIndex = 4;
 			this->button1->Text = L"Редактировать";
 			this->button1->UseVisualStyleBackColor = true;
-			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
+			this->button1->Click += gcnew System::EventHandler(this, &MyForm::edit_Click);
 			// 
 			// buttonSend
 			// 
@@ -713,7 +713,6 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 	private: SpecElem^ DF = gcnew SpecElem();
 	private: sendingForm^ SF = gcnew sendingForm();
 	
-	//private: cli::array<pingOfSend^>^ sending = gcnew cli::array<pingOfSend^>(20);
 	
 	//временный поток
 	private: readArr^ readThread;
@@ -724,67 +723,40 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 	//
 	//private: cli::array<pingOfSend>^ testThread = new cli::array<pingOfSend>(20);
 	//
-	private: pingOfSend *testThread;
+	//private: pingOfSend ^testThread;
 	private: cli::array<int>^ sendingFlags = gcnew cli::array<int>(20);
 	private: bool isPassTrue = false, isConnect = false, isReading = false;
-	private: int iii = 0, nowMesgS = 0, countOfSThreads = 0, back = 0;
+	private: int iii = 0, nowMesgS = 0, countOfSThreads = 0, back = 0, ff = 0;
 	protected: HANDLE mainhandle;
 	//HANDLE handle;
 	HMODULE hLib = LoadLibrary(L"SIECA132.DLL");
-
+	Generic::List<pingOfSend^>^ lister = gcnew Generic::List<pingOfSend^>();
+	
 //////
 //////функции работы со списком
 //////
-//добавление потока в конец списка
-private: struct pingOfSend* addThread(HANDLE handle, String^ name, CMSG* canMsg, int timeout) {
-	struct pingOfSend* temp = new pingOfSend(handle, name, canMsg, timeout);
-	temp->start();
-	struct pingOfSend* lst;
-	if (countOfSThreads != 0) {
-		lst = testThread;
-		//подача указателя от последнего элемента
-		while (lst->ptr != NULL) {
-			lst = lst->ptr;
-		}
-		lst->ptr = temp;
-	}
-	else {
-		lst = new pingOfSend(handle, name, canMsg, timeout);
-	}
-	return lst;
-}
-
-//удаление потока из списка
-private: struct pingOfSend* removelemThread(String^ name) {
-	pingOfSend* temp = testThread, *lst = findThread(name);
-	while (temp->ptr != lst) {
-		temp = temp->ptr;
-	}
-	temp->ptr = lst->ptr;
-	free(lst);
-	return temp;
-}
-
+////добавление потока в конец списка
+//
 //поиск потока в списке
-private: struct pingOfSend* findThread(String^ name) {
-	pingOfSend *thr = testThread;
-	while (thr->ptr != NULL && thr->getName() != name) {
-		thr = thr->ptr;
+private: int findThread(String^ name) {
+	for (int i = 0; i < lister->Count; i++) {
+		if (lister[i]->getName() == name) {
+			return i;
+		}
 	}
-
-	return thr;
+	return -1;
 }
-
-//изменение параметров потока в списке
-private: struct pingOfSend* editThread(String^ name, CMSG* canMsg, int timeout) {
-	pingOfSend* temp = testThread, * lst = findThread(name);
-	while (temp->ptr != lst) {
-		temp = temp->ptr;
-	}
-	temp->edit(canMsg, timeout);
-
-	return temp;
-}
+//
+////изменение параметров потока в списке
+//private: struct pingOfSend* editThread(String^ name, CMSG* canMsg, int timeout) {
+//	pingOfSend* temp = testThread, * lst = findThread(name);
+//	while (temp->ptr != lst) {
+//		temp = temp->ptr;
+//	}
+//	temp->edit(canMsg, timeout);
+//
+//	return temp;
+//}
 
 //////
 //////
@@ -827,6 +799,7 @@ private: System::Int64 Str_to_int(String^ str) {
 	return ret; 
 }
 
+//шестнадцатеричный в десятичный
 private: System::Int64 to_dec(String^ str) {
 	System::Int64 ret = 0;
 	int buf = 0;
@@ -880,7 +853,7 @@ private: System::Void buttonSendClick(System::Object^ sender, System::EventArgs^
 			SF->ShowDialog();
 			if (SF->DialogResult == System::Windows::Forms::DialogResult::OK) {
 				String^ sdata = SF->getdata();
-				pingOfSend *buffThread;
+				pingOfSend^ buffThread;
 				int emptycounter = 0;
 				unsigned char data[8];
 				for (int i = 0; i < 8; i++) {
@@ -910,7 +883,12 @@ private: System::Void buttonSendClick(System::Object^ sender, System::EventArgs^
 				canMsg[0].by_msg_lost = 0;
 				canMsg[0].by_extended = 1;
 				canMsg[0].by_remote = 0;
-
+				for (int i = 0; i < dataGridView2->Rows->Count; i++) {
+					if (dataGridView2->Rows[i]->Cells[1]->Value->ToString() == SF->getid()) {
+						//edit
+						break;
+					}
+				}
 
 				if (!stateS) {	//отправка одного сообщения
 					dataGridView2->Rows->Add("Send", to_hex(canMsg[0].l_id), to_hex(canMsg[0].aby_data[0]), to_hex(canMsg[0].aby_data[1]), to_hex(canMsg[0].aby_data[2]), to_hex(canMsg[0].aby_data[3]), to_hex(canMsg[0].aby_data[4]), to_hex(canMsg[0].aby_data[5]), to_hex(canMsg[0].aby_data[6]), to_hex(canMsg[0].aby_data[7]), "-");
@@ -932,10 +910,13 @@ private: System::Void buttonSendClick(System::Object^ sender, System::EventArgs^
 					}
 					
 					//список вместо массива 
-					
+					//
+					pingOfSend^ temp = gcnew pingOfSend(handle, SF->getid(), canMsg, timeout);
+					lister->Add(temp);
+					//
 					//buffThread = new pingOfSend(handle, SF->getid(), canMsg, timeout);
-					addThread(handle, SF->getid(), canMsg, timeout);
-					if (findThread(SF->getid())->is_alive()) {
+					//addThread(handle, SF->getid(), canMsg, timeout);
+					if (true) {
 						sendingFlags[emptycounter] = 1;
 						countOfSThreads++;
 						listBox2->Items->Add("Началась отправка посылки ID:" + to_hex(canMsg[0].l_id));
@@ -1041,12 +1022,16 @@ private: System::Void disconnectToolStripMenuItem_Click(System::Object^ sender, 
 	typedef long (WINAPI* mycanClose)(void*);
 	mycanClose canClose1;
 	(FARPROC&)canClose1 = GetProcAddress(hLib, "canClose");
+	for (int i = 0; i < lister->Count; i++) {
+		lister[i]->stopTh();
+	}
+	lister->Clear();
 	if (nowMesgS > 0 && countOfSThreads > 0) {
 		for (int i = 0; i <= nowMesgS; i++) {
-			if (sendingFlags[i] == 1) {
+			/*if (sendingFlags[i] == 1) {
 				if (dataGridView2->Rows[i]->Cells[0]->Value->ToString() == "Resume") testThread->resume();
 				testThread->stopTh();
-			}
+			}*/
 			sendingFlags[i] = 0;
 		}
 	}
@@ -1184,13 +1169,13 @@ private: System::Void aboutToolStripMenuItem_Click(System::Object^ sender, Syste
 //	e->Handled = true;
 //}
 
-private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
+private: System::Void edit_Click(System::Object^ sender, System::EventArgs^ e) {
 	//редактирование посылки
 	if (dataGridView2->Rows->Count != 0) {
-		int i12 = dataGridView2->CurrentRow->Index;
-		int reservedIndex = 0;
+		int index, i12 = dataGridView2->CurrentRow->Index;
 		bool stateSt = true;
-		struct pingOfSend* temp;
+		int reservedIndex = 0;
+		pingOfSend^ temp;
 		if (dataGridView2->Rows[i12]->Cells[0]->Value == "Send")
 		{
 			stateSt = false;
@@ -1200,14 +1185,17 @@ private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e
 		SF->ShowDialog();
 		if (SF->DialogResult == System::Windows::Forms::DialogResult::OK) {
 			if (stateSt) {
+				index = findThread(dataGridView2->Rows[i12]->Cells[1]->Value->ToString());
+				lister[index]->stopTh();
+				lister->RemoveAt(index);
 				//for (int i = 0; i <= nowMesgS; i++) {
 					//if (sendingFlags[i] == 1) {
 
-				temp = findThread(dataGridView2->Rows[i12]->Cells[1]->Value->ToString());
+				//temp = findThread(dataGridView2->Rows[i12]->Cells[1]->Value->ToString());
 				if (dataGridView2->Rows[i12]->Cells[0]->Value->ToString() == "Resume") temp->resume();
-					temp->stopTh();
-					reservedIndex = i12;
-							//break;
+					//temp->stopTh();
+				reservedIndex = i12;
+					//break;
 					//}
 				//}				 
 			}
@@ -1242,7 +1230,8 @@ private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e
 			//отделение потока
 			if (stateSt1) {
 				timeout = SF->gettimeout();
-				temp = new pingOfSend(handle, to_hex(canMsg[0].l_id), canMsg, timeout);
+				temp = gcnew pingOfSend(handle, to_hex(canMsg[0].l_id), canMsg, timeout);
+				lister->Add(temp);
 				if (temp->start()) {
 					sendingFlags[reservedIndex] = 1;
 					if (stateSt == false) {
@@ -1292,10 +1281,14 @@ private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e
 
 	//временный поток для проверки отправки посылок
 	if (dataGridView2->Rows->Count > 0) {
-		for (int i = 0; i <= nowMesgS; i++) {
-			testThread->stopTh();
-			sendingFlags[i] = 0;
+		for (int i = 0; i < lister->Count; i++) {
+			lister[i]->stopTh();
 		}
+		lister->Clear();
+		//for (int i = 0; i <= nowMesgS; i++) {
+		//	testThread->stopTh();
+		//	sendingFlags[i] = 0;
+		//}
 		dataGridView2->Rows->Clear();
 		nowMesgS = 0;
 		listBox2->Items->Add("Все посылки остановлены.");
@@ -1308,17 +1301,31 @@ private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e
 	//
 }
 
+
+
+	   private: static bool fname(pingOfSend^ temp) {
+		   if (temp->getName()) return true;
+		   else return false;
+	   }
 	//пока заблокирована
 	private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
 		//остановка отправки выбранной посылки и удаление ее из панели
 		if (dataGridView2->Rows->Count > 0) {
-			struct pingOfSend* temp;
+			pingOfSend^ temp;
 			int i = dataGridView2->CurrentRow->Index;
 			int k = countOfSThreads - 1;
 			//перебор потоков
-			temp = findThread(dataGridView2->Rows[i]->Cells[1]->Value->ToString());
-			temp->stopTh();
+			//temp = findThread(dataGridView2->Rows[i]->Cells[1]->Value->ToString());
+			//temp->stopTh();
 				//sendingFlags[j] = 0;
+			int index = findThread(dataGridView2->Rows[i]->Cells[1]->Value->ToString());
+			lister[index]->stopTh;
+			lister->RemoveAt(index);
+
+
+			lister->Find(gcnew Predicate<pingOfSend^>(fname));
+			
+
 
 			nowMesgS--;
 			dataGridView2->Rows->RemoveAt(i);
@@ -1380,6 +1387,8 @@ private: System::Void dataGridView2_CellClick(System::Object^ sender, System::Wi
 	if (e->RowIndex < 0 || e->ColumnIndex != dataGridView2->Columns[0]->Index) return;
 
 	if (dataGridView2->Rows[e->RowIndex]->Cells[0]->Value == "Pause") {
+		lister[findThread(dataGridView2->Rows[e->RowIndex]->Cells[1]->Value->ToString())]->pause();
+		//lister->Find(gcnew Predicate<pingOfSend^>());
 		//for (int i = 0; i < countOfSThreads; i++) {
 			//if (sendingFlags[i] == 1) {
 				/*if (dataGridView2->Rows[e->RowIndex]->Cells[1]->Value->ToString() == testThread[e->RowIndex]->getName()) {
@@ -1391,6 +1400,7 @@ private: System::Void dataGridView2_CellClick(System::Object^ sender, System::Wi
 	}
 	else {
 		if (dataGridView2->Rows[e->RowIndex]->Cells[0]->Value == "Resume") {
+			lister[findThread(dataGridView2->Rows[e->RowIndex]->Cells[1]->Value->ToString())]->resume();
 			//for (int i = 0; i <= countOfSThreads; i++) {
 				//if (sendingFlags[i] == 1) {
 					/*if (dataGridView2->Rows[e->RowIndex]->Cells[1]->Value->ToString() == testThread[e->RowIndex]->getName()) {

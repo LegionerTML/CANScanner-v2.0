@@ -6,7 +6,7 @@
 using namespace System;
 using namespace System::Threading;
 
-struct pingOfSend {
+ref class pingOfSend {
 public:
 	pingOfSend(HANDLE handle, String^ name, CMSG* msg);
 	pingOfSend(HANDLE handle, String^ name, CMSG* msg, int timeout);
@@ -18,12 +18,12 @@ public:
 	bool is_alive();
 	bool edit(CMSG* msg, int timeout);
 	bool start();
-	struct pingOfSend* ptr;
+	//struct pingOfSend* ptr;
 
 private:
-	std::thread *sendingTh;
+	Thread^ sendingTh;
 	HANDLE mainhandle;
-	String^ *nameTh;
+	String^ nameTh;
 	HMODULE hLib = LoadLibrary(L"SIECA132.DLL");
 	CMSG* msg1;
 	void sendingFunc();
@@ -33,13 +33,11 @@ private:
 
 pingOfSend::pingOfSend(HANDLE handle, String^ name, CMSG* msg) {
 	mainhandle = handle;
-	nameTh = &name;
+	nameTh = name;
 	timeoutTh = 100;
 	msg1 = msg;
-	ptr = NULL;
 	//отделение потока
-	sendingTh = new std::thread(&sendingFunc);
-		//gcnew Thread(gcnew ThreadStart(this, &pingOfSend::sendingFunc));
+	sendingTh = gcnew Thread(gcnew ThreadStart(this, &pingOfSend::sendingFunc));
 
 }
 void test(int n) {
@@ -48,22 +46,26 @@ void test(int n) {
 pingOfSend::pingOfSend(HANDLE handle, String^ name, CMSG* msg, int timeout) {
 	mainhandle = handle;
 	msg1 = msg;
-	nameTh = &name;
+	nameTh = name;
 	timeoutTh = timeout;
-	ptr = NULL;
 	isSending = true;
-
-	sendingTh = new std::thread(&sendingFunc); 
+	sendingTh = gcnew Thread(gcnew ThreadStart(this, &pingOfSend::sendingFunc));
+	sendingTh->Start();
+	//sendingTh = new std::thread(&sendingFunc); 
 }
 
 pingOfSend::~pingOfSend() {
 	isSending = false;
-	sendingTh->join();
+	sendingTh->Abort();
 	delete[] msg1;
 }
 
 bool pingOfSend::start() {
-	bool ret = true;
+	bool ret = false;
+	sendingTh->Start();
+	if (sendingTh->IsAlive) {
+		ret = true;
+	}
 	return ret;
 }
 
@@ -76,7 +78,7 @@ bool pingOfSend::is_alive() {
 
 bool pingOfSend::edit(CMSG* msg, int timeout) {
 	isSending = false;
-	sendingTh->join();
+	////sendingTh->join();
 	delete sendingTh;
 	msg1 = msg;
 	timeoutTh = timeout;
@@ -86,19 +88,20 @@ bool pingOfSend::edit(CMSG* msg, int timeout) {
 }
 
 void pingOfSend::resume() {
-	//sendingTh->Resume();
+	if (sendingTh->ThreadState == System::Threading::ThreadState::Suspended) sendingTh->Resume();
 }
 
 void pingOfSend::pause() {
-	//sendingTh->Suspend();
+	if (sendingTh->ThreadState == System::Threading::ThreadState::WaitSleepJoin) sendingTh->Suspend();
 }
 
 void pingOfSend::stopTh() {
-	//sendingTh->Abort();
+	if (sendingTh->ThreadState == System::Threading::ThreadState::Suspended) sendingTh->Resume();
+	sendingTh->Abort();
 }
 
 String^ pingOfSend::getName() {
-	return *nameTh;
+	return nameTh;
 }
 
 void pingOfSend::sendingFunc() {
