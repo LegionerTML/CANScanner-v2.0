@@ -50,7 +50,7 @@ pingOfSend::pingOfSend(HANDLE handle, String^ name, CMSG* msg, int timeout) {
 	timeoutTh = timeout;
 	isSending = true;
 	sendingTh = gcnew Thread(gcnew ThreadStart(this, &pingOfSend::sendingFunc));
-	sendingTh->Start();
+	//sendingTh->Start();
 	//sendingTh = new std::thread(&sendingFunc); 
 }
 
@@ -62,7 +62,7 @@ pingOfSend::~pingOfSend() {
 
 bool pingOfSend::start() {
 	bool ret = false;
-	sendingTh->Start();
+	if (!sendingTh->IsAlive)	sendingTh->Start();
 	if (sendingTh->IsAlive) {
 		ret = true;
 	}

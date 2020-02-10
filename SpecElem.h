@@ -45,6 +45,7 @@ namespace CANScannerv20 {
 	private: System::Windows::Forms::Label^ label2;
 
 
+
 	private:
 		/// <summary>
 		/// ќб€зательна€ переменна€ конструктора.
@@ -58,6 +59,7 @@ namespace CANScannerv20 {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(SpecElem::typeid));
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->label2 = (gcnew System::Windows::Forms::Label());
@@ -66,7 +68,7 @@ namespace CANScannerv20 {
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(127, 32);
+			this->label1->Location = System::Drawing::Point(128, 9);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(72, 13);
 			this->label1->TabIndex = 0;
@@ -76,21 +78,19 @@ namespace CANScannerv20 {
 			// 
 			this->textBox1->BackColor = System::Drawing::Color::White;
 			this->textBox1->BorderStyle = System::Windows::Forms::BorderStyle::None;
-			this->textBox1->Location = System::Drawing::Point(15, 48);
+			this->textBox1->Location = System::Drawing::Point(15, 25);
 			this->textBox1->Multiline = true;
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->ReadOnly = true;
-			this->textBox1->Size = System::Drawing::Size(301, 198);
+			this->textBox1->Size = System::Drawing::Size(310, 284);
 			this->textBox1->TabIndex = 6;
 			this->textBox1->TabStop = false;
-			this->textBox1->Text = L"Ёто программа дл€ работы с CAN-шиной. \r\nќна позвол€ет осуществл€ть чтение посылок"
-				L", которые пересылаютс€ в шине. Ќастраивать отправку посылок, как единичной, так "
-				L"и с определенной периодичностью.";
+			this->textBox1->Text = resources->GetString(L"textBox1.Text");
 			// 
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(12, 417);
+			this->label2->Location = System::Drawing::Point(12, 336);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(62, 13);
 			this->label2->TabIndex = 7;
@@ -101,7 +101,7 @@ namespace CANScannerv20 {
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::Color::White;
-			this->ClientSize = System::Drawing::Size(337, 439);
+			this->ClientSize = System::Drawing::Size(337, 358);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->label1);
@@ -114,6 +114,5 @@ namespace CANScannerv20 {
 
 		}
 #pragma endregion
-
 };
 }

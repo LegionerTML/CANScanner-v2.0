@@ -90,10 +90,10 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 
 
 	private: System::Windows::Forms::FolderBrowserDialog^ folderBrowserDialog1;
-	private: System::Windows::Forms::ColorDialog^ colorDialog1;
 
 
-	private: System::Windows::Forms::ContextMenuStrip^ contextMenuStrip1;
+
+
 
 	private: System::Windows::Forms::ToolTip^ toolTip1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ ID;
@@ -130,6 +130,18 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ data27;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ data28;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colTime;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -231,8 +243,6 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			this->buttonSend = (gcnew System::Windows::Forms::Button());
 			this->listBox2 = (gcnew System::Windows::Forms::ListBox());
 			this->folderBrowserDialog1 = (gcnew System::Windows::Forms::FolderBrowserDialog());
-			this->colorDialog1 = (gcnew System::Windows::Forms::ColorDialog());
-			this->contextMenuStrip1 = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->toolTip1 = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->menuStrip1->SuspendLayout();
 			this->tabControl1->SuspendLayout();
@@ -244,7 +254,7 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			// 
 			// menuStrip1
 			// 
-			this->menuStrip1->BackColor = System::Drawing::SystemColors::Window;
+			this->menuStrip1->BackColor = System::Drawing::SystemColors::ButtonHighlight;
 			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
 				this->connectionToolStripMenuItem,
 					this->actionToolStripMenuItem, this->aboutToolStripMenuItem
@@ -270,7 +280,7 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			// connectToolStripMenuItem
 			// 
 			this->connectToolStripMenuItem->Name = L"connectToolStripMenuItem";
-			this->connectToolStripMenuItem->Size = System::Drawing::Size(144, 22);
+			this->connectToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->connectToolStripMenuItem->Text = L"Подключить";
 			this->connectToolStripMenuItem->ToolTipText = L"Подключиться к устройству";
 			this->connectToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::connectToolStripMenuItem_Click);
@@ -279,8 +289,9 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			// 
 			this->disconnectToolStripMenuItem->Enabled = false;
 			this->disconnectToolStripMenuItem->Name = L"disconnectToolStripMenuItem";
-			this->disconnectToolStripMenuItem->Size = System::Drawing::Size(144, 22);
+			this->disconnectToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->disconnectToolStripMenuItem->Text = L"Отключить";
+			this->disconnectToolStripMenuItem->ToolTipText = L"Разрыв соединения";
 			this->disconnectToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::disconnectToolStripMenuItem_Click);
 			// 
 			// actionToolStripMenuItem
@@ -297,7 +308,7 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			// 
 			this->readToolStripMenuItem->Enabled = false;
 			this->readToolStripMenuItem->Name = L"readToolStripMenuItem";
-			this->readToolStripMenuItem->Size = System::Drawing::Size(161, 22);
+			this->readToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->readToolStripMenuItem->Text = L"Чтение CAN";
 			this->readToolStripMenuItem->ToolTipText = L"Прием посылок с CAN-шины";
 			this->readToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::readToolStripMenuItem_Click);
@@ -306,8 +317,8 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			// 
 			this->saveLogToolStripMenuItem->Enabled = false;
 			this->saveLogToolStripMenuItem->Name = L"saveLogToolStripMenuItem";
-			this->saveLogToolStripMenuItem->Size = System::Drawing::Size(161, 22);
-			this->saveLogToolStripMenuItem->Text = L"Сохранить логи";
+			this->saveLogToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+			this->saveLogToolStripMenuItem->Text = L"Запись";
 			this->saveLogToolStripMenuItem->ToolTipText = L"Сохранение принятых посылок в log.txt";
 			this->saveLogToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::saveLogToolStripMenuItem_Click);
 			// 
@@ -315,7 +326,7 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			// 
 			this->resetToolStripMenuItem->Enabled = false;
 			this->resetToolStripMenuItem->Name = L"resetToolStripMenuItem";
-			this->resetToolStripMenuItem->Size = System::Drawing::Size(161, 22);
+			this->resetToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->resetToolStripMenuItem->Text = L"Сброс";
 			this->resetToolStripMenuItem->ToolTipText = L"Обновить таблицу чтения CAN-шины";
 			this->resetToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::resetToolStripMenuItem_Click);
@@ -323,8 +334,8 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			// enterPasswordToolStripMenuItem
 			// 
 			this->enterPasswordToolStripMenuItem->Name = L"enterPasswordToolStripMenuItem";
-			this->enterPasswordToolStripMenuItem->Size = System::Drawing::Size(161, 22);
-			this->enterPasswordToolStripMenuItem->Text = L"Ввести пароль";
+			this->enterPasswordToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+			this->enterPasswordToolStripMenuItem->Text = L"Пароль";
 			this->enterPasswordToolStripMenuItem->ToolTipText = L"Доступ к специальным возможностям";
 			this->enterPasswordToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::enterPasswordToolStripMenuItem_Click);
 			// 
@@ -344,7 +355,7 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 				| System::Windows::Forms::AnchorStyles::Left)
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->tabControl1->Controls->Add(this->reading);
-			this->tabControl1->Controls->Add(this->sending);
+			//this->tabControl1->Controls->Add(this->sending);
 			this->tabControl1->ImeMode = System::Windows::Forms::ImeMode::NoControl;
 			this->tabControl1->ItemSize = System::Drawing::Size(100, 18);
 			this->tabControl1->Location = System::Drawing::Point(0, 27);
@@ -492,6 +503,8 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			this->sending->Size = System::Drawing::Size(831, 464);
 			this->sending->TabIndex = 1;
 			this->sending->Text = L"Отправка";
+			this->sending->UseWaitCursor = true;
+			this->sending->Visible = false;
 			// 
 			// dataGridView2
 			// 
@@ -520,8 +533,9 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			this->dataGridView2->Location = System::Drawing::Point(0, 36);
 			this->dataGridView2->Name = L"dataGridView2";
 			this->dataGridView2->ReadOnly = true;
-			this->dataGridView2->Size = System::Drawing::Size(831, 428);
+			this->dataGridView2->Size = System::Drawing::Size(831, 432);
 			this->dataGridView2->TabIndex = 3;
+			this->dataGridView2->UseWaitCursor = true;
 			this->dataGridView2->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView2_CellClick);
 			// 
 			// buttons
@@ -630,30 +644,31 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			this->button3->TabIndex = 6;
 			this->button3->Text = L"Удалить все";
 			this->button3->UseVisualStyleBackColor = true;
+			this->button3->UseWaitCursor = true;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
 			// 
 			// button2
 			// 
 			this->button2->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-			this->button2->Enabled = false;
-			this->button2->Location = System::Drawing::Point(478, 7);
+			this->button2->Location = System::Drawing::Point(595, 7);
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(111, 23);
 			this->button2->TabIndex = 5;
 			this->button2->Text = L"Удалить";
 			this->button2->UseVisualStyleBackColor = true;
-			this->button2->Visible = false;
+			this->button2->UseWaitCursor = true;
 			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
 			// 
 			// button1
 			// 
 			this->button1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-			this->button1->Location = System::Drawing::Point(595, 7);
+			this->button1->Location = System::Drawing::Point(478, 7);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(111, 23);
 			this->button1->TabIndex = 4;
 			this->button1->Text = L"Редактировать";
 			this->button1->UseVisualStyleBackColor = true;
+			this->button1->UseWaitCursor = true;
 			this->button1->Click += gcnew System::EventHandler(this, &MyForm::edit_Click);
 			// 
 			// buttonSend
@@ -665,6 +680,7 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			this->buttonSend->TabIndex = 2;
 			this->buttonSend->Text = L"Добавить";
 			this->buttonSend->UseVisualStyleBackColor = true;
+			this->buttonSend->UseWaitCursor = true;
 			this->buttonSend->Click += gcnew System::EventHandler(this, &MyForm::buttonSendClick);
 			// 
 			// listBox2
@@ -677,11 +693,6 @@ private: System::Windows::Forms::DataGridView^ dataGridView2;
 			this->listBox2->Size = System::Drawing::Size(831, 43);
 			this->listBox2->TabIndex = 1;
 			this->listBox2->TabStop = false;
-			// 
-			// contextMenuStrip1
-			// 
-			this->contextMenuStrip1->Name = L"contextMenuStrip1";
-			this->contextMenuStrip1->Size = System::Drawing::Size(61, 4);
 			// 
 			// MyForm
 			// 
@@ -852,80 +863,67 @@ private: System::Void buttonSendClick(System::Object^ sender, System::EventArgs^
 		if (nowMesgS < 20) {
 			SF->ShowDialog();
 			if (SF->DialogResult == System::Windows::Forms::DialogResult::OK) {
-				String^ sdata = SF->getdata();
-				pingOfSend^ buffThread;
-				int emptycounter = 0;
-				unsigned char data[8];
-				for (int i = 0; i < 8; i++) {
-					data[i] = hex_data(sdata[2 * i], sdata[2 * i + 1]);
-				}
-				HANDLE handle = mainhandle;
-				long l_retval, b_len = 1;
-				int timeout = 0;
-				CMSG canMsg[1];
-				bool stateS = SF->getState();
-				unsigned char bytearray[8];
-				//структура для чтения шины
-				void (*myCMSG)();
-				(FARPROC&)myCMSG = GetProcAddress(hLib, "CMSG");
-				typedef long (WINAPI* mycanSend)(void*, CMSG*, long*);
-				mycanSend canSend1;
-				(FARPROC&)canSend1 = GetProcAddress(hLib, "canSend");
-
-				canMsg[0].l_id = Str_to_int(SF->getid());
-				canMsg[0].by_len = 8;
-				for (int i = 0; i < 8; i++) {
-					bytearray[i] = data[i];
-				}
-				for (int i = 0; i < 8; i++) {
-					canMsg[0].aby_data[i] = bytearray[i];
-				}
-				canMsg[0].by_msg_lost = 0;
-				canMsg[0].by_extended = 1;
-				canMsg[0].by_remote = 0;
+				int idx = -1, timeout = 0;
+				unsigned char data[8], bytearray[8];
 				for (int i = 0; i < dataGridView2->Rows->Count; i++) {
 					if (dataGridView2->Rows[i]->Cells[1]->Value->ToString() == SF->getid()) {
-						//edit
+						idx = i;
 						break;
 					}
 				}
-
-				if (!stateS) {	//отправка одного сообщения
-					dataGridView2->Rows->Add("Send", to_hex(canMsg[0].l_id), to_hex(canMsg[0].aby_data[0]), to_hex(canMsg[0].aby_data[1]), to_hex(canMsg[0].aby_data[2]), to_hex(canMsg[0].aby_data[3]), to_hex(canMsg[0].aby_data[4]), to_hex(canMsg[0].aby_data[5]), to_hex(canMsg[0].aby_data[6]), to_hex(canMsg[0].aby_data[7]), "-");
-					for (int i = 0; i <= nowMesgS; i++) {
-						emptycounter = i;
-						if (sendingFlags[i] == 0) break;
-					}
-					soloSend(emptycounter);
-					sendingFlags[emptycounter] = 2;
-					nowMesgS++;
+				if (idx >= 0) {
+					editor(idx, SF->getState(), SF->getid(), SF->getdata(), SF->gettimeout());
 				}
-				else {	//непрерывная отправка
-					timeout = SF->gettimeout();
-					dataGridView2->Rows->Add("Pause", to_hex(canMsg[0].l_id), to_hex(canMsg[0].aby_data[0]), to_hex(canMsg[0].aby_data[1]), to_hex(canMsg[0].aby_data[2]), to_hex(canMsg[0].aby_data[3]), to_hex(canMsg[0].aby_data[4]), to_hex(canMsg[0].aby_data[5]), to_hex(canMsg[0].aby_data[6]), to_hex(canMsg[0].aby_data[7]), timeout);
-					
-					for (int i = 0; i <= nowMesgS; i++) {
-						emptycounter = i;
-						if (sendingFlags[i] == 0) break;
+				else {
+					String^ sdata = SF->getdata(); 
+					pingOfSend^ buffThread;
+					CMSG canMsg[1];
+					bool stateS = SF->getState();
+					HANDLE handle = mainhandle;
+					long l_retval, b_len = 1;
+					typedef long (WINAPI* mycanSend)(void*, CMSG*, long*);
+					mycanSend canSend1;
+					(FARPROC&)canSend1 = GetProcAddress(hLib, "canSend");
+					for (int i = 0; i < 8; i++) {
+						data[i] = hex_data(sdata[2 * i], sdata[2 * i + 1]);
 					}
-					
-					//список вместо массива 
-					//
-					pingOfSend^ temp = gcnew pingOfSend(handle, SF->getid(), canMsg, timeout);
-					lister->Add(temp);
-					//
-					//buffThread = new pingOfSend(handle, SF->getid(), canMsg, timeout);
-					//addThread(handle, SF->getid(), canMsg, timeout);
-					if (true) {
-						sendingFlags[emptycounter] = 1;
-						countOfSThreads++;
-						listBox2->Items->Add("Началась отправка посылки ID:" + to_hex(canMsg[0].l_id));
-						listBox2->TopIndex = listBox2->Items->Count - 1;
+					canMsg[0].l_id = Str_to_int(SF->getid());
+					canMsg[0].by_len = 8;
+					for (int i = 0; i < 8; i++) {
+						bytearray[i] = data[i];
+					}
+					for (int i = 0; i < 8; i++) {
+						canMsg[0].aby_data[i] = bytearray[i];
+					}
+					canMsg[0].by_msg_lost = 0;
+					canMsg[0].by_extended = 1;
+					canMsg[0].by_remote = 0;
+					if (!stateS) {	//отправка одного сообщения
+						dataGridView2->Rows->Add("Send", to_hex(canMsg[0].l_id), to_hex(canMsg[0].aby_data[0]), to_hex(canMsg[0].aby_data[1]), to_hex(canMsg[0].aby_data[2]), to_hex(canMsg[0].aby_data[3]), to_hex(canMsg[0].aby_data[4]), to_hex(canMsg[0].aby_data[5]), to_hex(canMsg[0].aby_data[6]), to_hex(canMsg[0].aby_data[7]), "-");
+						soloSend(dataGridView2->Rows->Count - 1);
 						nowMesgS++;
 					}
-					else {
-						listBox2->Items->Add("Упс... Что-то пошло не так.");
-						listBox2->TopIndex = listBox2->Items->Count - 1;
+					else {	//непрерывная отправка
+						timeout = SF->gettimeout();
+						dataGridView2->Rows->Add("Pause", to_hex(canMsg[0].l_id), to_hex(canMsg[0].aby_data[0]), to_hex(canMsg[0].aby_data[1]), to_hex(canMsg[0].aby_data[2]), to_hex(canMsg[0].aby_data[3]), to_hex(canMsg[0].aby_data[4]), to_hex(canMsg[0].aby_data[5]), to_hex(canMsg[0].aby_data[6]), to_hex(canMsg[0].aby_data[7]), timeout);
+
+						//список вместо массива 
+						//
+						buffThread = gcnew pingOfSend(handle, SF->getid(), canMsg, timeout);
+						buffThread->start();
+						//
+						//buffThread = new pingOfSend(handle, SF->getid(), canMsg, timeout);
+						//addThread(handle, SF->getid(), canMsg, timeout);
+						if (buffThread->is_alive()) {
+							lister->Add(buffThread);
+							listBox2->Items->Add("Началась отправка посылки ID:" + to_hex(canMsg[0].l_id));
+							listBox2->TopIndex = listBox2->Items->Count - 1;
+							nowMesgS++;
+						}
+						else {
+							listBox2->Items->Add("Упс... Что-то пошло не так.");
+							listBox2->TopIndex = listBox2->Items->Count - 1;
+						}
 					}
 				}
 			}
@@ -1026,15 +1024,6 @@ private: System::Void disconnectToolStripMenuItem_Click(System::Object^ sender, 
 		lister[i]->stopTh();
 	}
 	lister->Clear();
-	if (nowMesgS > 0 && countOfSThreads > 0) {
-		for (int i = 0; i <= nowMesgS; i++) {
-			/*if (sendingFlags[i] == 1) {
-				if (dataGridView2->Rows[i]->Cells[0]->Value->ToString() == "Resume") testThread->resume();
-				testThread->stopTh();
-			}*/
-			sendingFlags[i] = 0;
-		}
-	}
 	dataGridView2->Rows->Clear();
 	nowMesgS = 0;
 	l_retval = canClose1(handle);
@@ -1061,10 +1050,7 @@ private: System::Void readToolStripMenuItem_Click(System::Object^ sender, System
 
 			//добавить многопоточность для чтения
 			isReading = true;
-			//std::thread thr(testFunc);
-			//thr.join();
-			ReadingFunc(100);
-			//readWorker->RunWorkerAsync();
+			ReadingFunc(10);
 		}
 		else {
 
@@ -1101,14 +1087,11 @@ private: void ReadingFunc(int timeout) {
 					}
 				}
 				else {
-					//l_idl = to_hex(data[i].l_id);
-					
 					//данные
 					dataGridView1->Rows->Add(to_hex(data[i].l_id), to_hex(data[i].aby_data[0]), to_hex(data[i].aby_data[1]), to_hex(data[i].aby_data[2]), to_hex(data[i].aby_data[3]), to_hex(data[i].aby_data[4]), to_hex(data[i].aby_data[5]), to_hex(data[i].aby_data[6]), to_hex(data[i].aby_data[7]), data[i].count);
 				}
 			}
 			back = size;
-			
 		}
 		Application::DoEvents();
 	}
@@ -1149,8 +1132,9 @@ private: System::Void enterPasswordToolStripMenuItem_Click(System::Object^ sende
 		readToolStripMenuItem->Enabled = true;
 		//tabControl1->
 		sending->Enabled= true;
+		sending->Visible = true;
 		if (!tabControl1->TabPages->Contains(sending)) {
-			tabControl1->TabPages->Add(sending);
+			tabControl1->Controls->Add(sending);
 		}
 	}
 }
@@ -1159,16 +1143,6 @@ private: System::Void aboutToolStripMenuItem_Click(System::Object^ sender, Syste
 	//Кнопка о программе
 	DF->ShowDialog();
 }
-
-//функция перерисовки таблицы для отображения табуляции
-//private: System::Void dataGridView1_CellPainting(System::Object^ sender, System::Windows::Forms::DataGridViewCellPaintingEventArgs^ e) {
-//	e->Paint(e->CellBounds, DataGridViewPaintParts::All & ~DataGridViewPaintParts::ContentForeground);
-//	if (e->Value != nullptr) {
-//		e->Graphics->DrawString(e->Value->ToString(), e->CellStyle->Font, gcnew SolidBrush(e->CellStyle->ForeColor), e->CellBounds.X+3, e->CellBounds.Y+3);
-//	}
-//	e->Handled = true;
-//}
-
 
 //////
 //////функция изменения посылки
@@ -1243,7 +1217,7 @@ private: System::Void edit_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (dataGridView2->Rows->Count != 0) {
 		int i12 = dataGridView2->CurrentRow->Index, reservedIndex = 0;
 		bool stateSt = true;
-		if (dataGridView2->Rows[i12]->Cells[0]->Value != "Send") stateSt = false;
+		if (dataGridView2->Rows[i12]->Cells[0]->Value == "Send") stateSt = false;
 		SF->set(Convert::ToString(dataGridView2->Rows[i12]->Cells[1]->Value), stateSt, Convert::ToString(dataGridView2->Rows[i12]->Cells[10]->Value));
 		SF->setData(dataGridView2->Rows[i12]->Cells[2]->Value->ToString(), dataGridView2->Rows[i12]->Cells[3]->Value->ToString(), dataGridView2->Rows[i12]->Cells[4]->Value->ToString(), dataGridView2->Rows[i12]->Cells[5]->Value->ToString(), dataGridView2->Rows[i12]->Cells[6]->Value->ToString(), dataGridView2->Rows[i12]->Cells[7]->Value->ToString(), dataGridView2->Rows[i12]->Cells[8]->Value->ToString(), dataGridView2->Rows[i12]->Cells[9]->Value->ToString());
 		SF->ShowDialog();
@@ -1279,7 +1253,6 @@ private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e
 		int i = dataGridView2->CurrentRow->Index, k = countOfSThreads - 1, index = findThread(dataGridView2->Rows[i]->Cells[1]->Value->ToString()); //перебор потоков
 		lister[index]->stopTh();
 		lister->RemoveAt(index);
-
 		nowMesgS--;
 		dataGridView2->Rows->RemoveAt(i);
 		listBox2->Items->Add("Выбранная посылка удалена");
@@ -1332,26 +1305,11 @@ private: System::Void dataGridView2_CellClick(System::Object^ sender, System::Wi
 
 	if (dataGridView2->Rows[e->RowIndex]->Cells[0]->Value == "Pause") {
 		lister[findThread(dataGridView2->Rows[e->RowIndex]->Cells[1]->Value->ToString())]->pause();
-		//lister->Find(gcnew Predicate<pingOfSend^>());
-		//for (int i = 0; i < countOfSThreads; i++) {
-			//if (sendingFlags[i] == 1) {
-				/*if (dataGridView2->Rows[e->RowIndex]->Cells[1]->Value->ToString() == testThread[e->RowIndex]->getName()) {
-					testThread[e->RowIndex]->pause();
-				}*/
-			//}
-		//}
 		dataGridView2->Rows[e->RowIndex]->Cells[0]->Value = "Resume";
 	}
 	else {
 		if (dataGridView2->Rows[e->RowIndex]->Cells[0]->Value == "Resume") {
 			lister[findThread(dataGridView2->Rows[e->RowIndex]->Cells[1]->Value->ToString())]->resume();
-			//for (int i = 0; i <= countOfSThreads; i++) {
-				//if (sendingFlags[i] == 1) {
-					/*if (dataGridView2->Rows[e->RowIndex]->Cells[1]->Value->ToString() == testThread[e->RowIndex]->getName()) {
-						testThread[e->RowIndex]->resume();
-					}*/
-				//}
-			//}
 			dataGridView2->Rows[e->RowIndex]->Cells[0]->Value = "Pause";
 		}
 		else {

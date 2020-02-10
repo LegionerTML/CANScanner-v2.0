@@ -88,8 +88,9 @@ namespace CANScannerv20 {
 			// textBox10
 			// 
 			this->textBox10->Location = System::Drawing::Point(146, 97);
+			this->textBox10->MaxLength = 4;
 			this->textBox10->Name = L"textBox10";
-			this->textBox10->Size = System::Drawing::Size(28, 20);
+			this->textBox10->Size = System::Drawing::Size(36, 20);
 			this->textBox10->TabIndex = 168;
 			this->textBox10->Text = L"100";
 			this->textBox10->Leave += gcnew System::EventHandler(this, &sendingForm::textBox10_Leave);
@@ -106,6 +107,7 @@ namespace CANScannerv20 {
 			// textBox9
 			// 
 			this->textBox9->Location = System::Drawing::Point(306, 47);
+			this->textBox9->MaxLength = 2;
 			this->textBox9->Name = L"textBox9";
 			this->textBox9->Size = System::Drawing::Size(28, 20);
 			this->textBox9->TabIndex = 166;
@@ -115,6 +117,7 @@ namespace CANScannerv20 {
 			// textBox8
 			// 
 			this->textBox8->Location = System::Drawing::Point(272, 47);
+			this->textBox8->MaxLength = 2;
 			this->textBox8->Name = L"textBox8";
 			this->textBox8->Size = System::Drawing::Size(28, 20);
 			this->textBox8->TabIndex = 165;
@@ -124,6 +127,7 @@ namespace CANScannerv20 {
 			// textBox7
 			// 
 			this->textBox7->Location = System::Drawing::Point(238, 47);
+			this->textBox7->MaxLength = 2;
 			this->textBox7->Name = L"textBox7";
 			this->textBox7->Size = System::Drawing::Size(28, 20);
 			this->textBox7->TabIndex = 164;
@@ -133,6 +137,7 @@ namespace CANScannerv20 {
 			// textBox6
 			// 
 			this->textBox6->Location = System::Drawing::Point(204, 47);
+			this->textBox6->MaxLength = 2;
 			this->textBox6->Name = L"textBox6";
 			this->textBox6->Size = System::Drawing::Size(28, 20);
 			this->textBox6->TabIndex = 163;
@@ -142,6 +147,7 @@ namespace CANScannerv20 {
 			// textBox5
 			// 
 			this->textBox5->Location = System::Drawing::Point(169, 47);
+			this->textBox5->MaxLength = 2;
 			this->textBox5->Name = L"textBox5";
 			this->textBox5->Size = System::Drawing::Size(28, 20);
 			this->textBox5->TabIndex = 162;
@@ -151,6 +157,7 @@ namespace CANScannerv20 {
 			// textBox4
 			// 
 			this->textBox4->Location = System::Drawing::Point(135, 47);
+			this->textBox4->MaxLength = 2;
 			this->textBox4->Name = L"textBox4";
 			this->textBox4->Size = System::Drawing::Size(28, 20);
 			this->textBox4->TabIndex = 161;
@@ -160,6 +167,7 @@ namespace CANScannerv20 {
 			// textBox3
 			// 
 			this->textBox3->Location = System::Drawing::Point(101, 47);
+			this->textBox3->MaxLength = 2;
 			this->textBox3->Name = L"textBox3";
 			this->textBox3->Size = System::Drawing::Size(28, 20);
 			this->textBox3->TabIndex = 160;
@@ -169,6 +177,7 @@ namespace CANScannerv20 {
 			// textBox2
 			// 
 			this->textBox2->Location = System::Drawing::Point(68, 47);
+			this->textBox2->MaxLength = 2;
 			this->textBox2->Name = L"textBox2";
 			this->textBox2->Size = System::Drawing::Size(28, 20);
 			this->textBox2->TabIndex = 159;
@@ -187,6 +196,7 @@ namespace CANScannerv20 {
 			// textBox1
 			// 
 			this->textBox1->Location = System::Drawing::Point(84, 18);
+			this->textBox1->MaxLength = 8;
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(68, 20);
 			this->textBox1->TabIndex = 157;
@@ -320,7 +330,7 @@ namespace CANScannerv20 {
 	public: System::Int32 gettimeout() {
 		System::Int32 ret = 0;
 		if (checkBox1->Checked) {
-			Int32 ret = Convert::ToInt32(textBox10->Text);
+			ret = Convert::ToInt32(textBox10->Text);
 		}
 		return ret;
 	}
@@ -332,9 +342,7 @@ namespace CANScannerv20 {
 	public: System::Void set(System::String^ ID, bool state, System::String^ Time) {
 		textBox1->Text = ID;
 		textBox10->Text = Time;
-		if (checkBox1->Checked != state) {
-			checkBox1->Checked = !state;
-		}
+		checkBox1->Checked = state;
 		if (!checkBox1->Checked) textBox10->Text = "100";
 	}
 
